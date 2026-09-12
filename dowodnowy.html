@@ -14,7 +14,7 @@
     <!-- iOS - ukrywanie paska Safari -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="images/coi_common_ui_ic_mobywatel_logo.svg">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
 
     <!-- Android/iOS - PWA -->
     <link rel="manifest" href="/manifest.json">
@@ -75,17 +75,6 @@ body, html {
     z-index: 1;
     display: block;
 }
-
-.photo-border {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    scale: 1.01;
-    z-index: 4;
-}
-
 
 #gradient {
     /* position: relative;
@@ -212,9 +201,8 @@ body, html {
     <!-- Sekcja związana z dowodem -->
     <main>
         <section id="lew">
-            <img id="zdjecie-display" src="images/bKT7LZr.png" class="object-contain w-full rounded-lg photo" style="margin: 0;" alt="Zdjęcie nieprawidłowe!">
+            <img id="zdjecie-display" src="images/bKT7LZr.png" class="object-contain w-full rounded-lg photo" style="margin: 0;" alt="Zdjęcie">
 
-            <img class="photo-border" src="./dowod_files/border.png" alt="">
             <div id="gradient"></div>
 
             <img src="./images/polish_flag.gif" alt="flaga" id="flaga" style="margin: 0; margin-top: 13px;">
