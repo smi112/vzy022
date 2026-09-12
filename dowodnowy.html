@@ -1,30 +1,25 @@
-<!-- Aplikacja jest wykonana w celach edukacyjnych. Nie odpowiadamy za to jak jest uzywana! --><!-- Created by (know & mKing) .gg/fakeobywatel --><!DOCTYPE html><html lang="PL-pl"><head></head><body class="">
-
-
-<link rel="manifest" href="/manifest.json" />
-<script src="/fullscreen.js" defer></script>
-    <!-- Metadane -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    
+<!-- Aplikacja jest wykonana w celach edukacyjnych. Nie odpowiadamy za to jak jest uzywana! -->
+<!-- Created by (know & mKing) .gg/fakeobywatel -->
+<!DOCTYPE html>
+<html lang="PL-pl">
+<head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width">
-    <meta name="theme-color" content="#F5F6FB">
-
-    <!-- Nazwa strony -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>mObywatel 2.0</title>
 
-    <!-- Ikona strony -->
+    <!-- Ikona strony (favicon) -->
     <link rel="shortcut icon" href="images/coi_common_ui_ic_mobywatel_logo.svg" type="image/x-icon">
+    <link rel="icon" href="images/coi_common_ui_ic_mobywatel_logo.svg" type="image/x-icon">
 
-    <!-- Wyświetlanie strony w IOS -->
-
-    <meta name="next-head-count" content="5">
+    <!-- iOS - ukrywanie paska Safari -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="images/coi_common_ui_ic_mobywatel_logo.svg">
 
-    <!-- Manifest i Service Worker -->
-    <link rel="manifest" href="http://51.68.148.12/dowodyall/manifest.json">
-    <script src="hhttp://51.68.148.12/auth/user/mobywatel/sw.js"></script>
+    <!-- Android/iOS - PWA -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#F5F6FB">
+    <meta name="mobile-web-app-capable" content="yes">
 
     <!-- PLIKI CSS -->
     <link rel="stylesheet" href="css/dowodnowy.css">
@@ -33,29 +28,10 @@
 
     <!-- PLIK JS -->
     <script src="js/jquery-3.7.1.min.js"></script>
+    <script src="js/hide-navbar.js" defer></script>
+    <script src="/fullscreen.js" defer></script>
 
     <noscript data-n-css=""></noscript>
-    <script>
-        window.addEventListener("load", function() {
-    // Ukrywanie paska adresu na iOS
-    if ("standalone" in window.navigator && window.navigator.standalone) {
-        var a = document.getElementsByTagName("a");
-        for (var i = 0; i < a.length; i++) {
-            a[i].addEventListener("click", function(event) {
-                var newLocation = this.href;
-                event.preventDefault();
-                window.location = newLocation;
-            }, false);
-        }
-    }
-    
-    // Alternatywne podejÄŹĹĽËťcie do ukrywania paska adresu
-    setTimeout(function() {
-        window.scrollTo(0, 1);
-    }, 0);
-});
-
-    </script>
     <style>
   body {
     overscroll-behavior: contain;
@@ -220,9 +196,8 @@ body, html {
     </style>
   <link rel="stylesheet" href="css/dowodnowy.css">
 <script src="js/jquery-3.7.1.min.js"></script>
-  
-
-   
+</head>
+<body class="">
     <header>
         <a href="home.html">
             <img src="images/pozdro.svg" alt="leftarrow">
