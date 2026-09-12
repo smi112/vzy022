@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Konwerter SVG → PNG</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 { color: #333; }
+        button {
+            background: #007aff;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            margin: 10px 5px;
+        }
+        button:hover { background: #0056b3; }
+        .preview {
+            display: flex;
+            gap: 30px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        .preview-box {
+            text-align: center;
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 8px;
+            background: #fafafa;
+        }
+        canvas {
+            border: 2px solid #007aff;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        .info {
+            background: #e7f3ff;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            display: none;
+        }
+        .step {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            border-left: 4px solid #ffc107;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 Konwerter SVG → PNG dla iOS</h1>
+        
+        <div class="info">
+            <strong>Problem:</strong> iOS nie obsługuje SVG dla apple-touch-icon. Musimy przekonwertować SVG na PNG.
+            <br><br>
+            <strong>Rozwiązanie:</strong> Ten skrypt automatycznie skonwertuje 3 pliki SVG na PNG.
+        </div>
+
+        <div class="step">
+            <strong>Krok 1:</strong> Kliknij przycisk poniżej aby wczytać pliki SVG z folderu /images
+        </div>
+
+        <button onclick="loadAndConvertAll()" style="font-size: 20px; padding: 20px 40px;">
+            ✨ Wczytaj i Konwertuj SVG → PNG
+        </button>
+
+        <div class="preview" id="preview"></div>
+
+        <div class="success" id="successMsg">
+            ✅ Konwersja zakończona! Teraz kliknij każdy przycisk "Pobierz PNG" aby pobrać pliki.
+        </div>
+
+        <div class="step" style="margin-top: 30px;">
+            <strong>Krok 2:</strong> Po pobraniu wszystkich 3 plików PNG, skopiuj je do głównego folderu projektu:
+            <ul>
+                <li><code>apple-touch-icon.png</code> → główny folder</li>
+                <li><code>icon-192.png</code> → główny folder</li>
+                <li><code>icon-512.png</code> → główny folder</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        const files = [
+            { svg: 'images/logo_180x180.svg', size: 180, output: 'apple-touch-icon.png' },
+            { svg: 'images/logo_192x192.svg', size: 192, output: 'icon-192.png' },
+            { svg: 'images/logo_512x512.svg', size: 512, output: 'icon-512.png' }
+        ];
+
+        async function loadAndConvertAll() {
+            const preview = document.getElementById('preview');
+            preview.innerHTML = '';
+
+            for (const file of files) {
+                await convertSvgToPng(file);
+            }
+
+            document.getElementById('successMsg').style.display = 'block';
+        }
+
+        async function convertSvgToPng(file) {
+            const preview = document.getElementById('preview');
+            
+            const box = document.createElement('div');
+            box.className = 'preview-box';
+            box.innerHTML = `
+                <h3>${file.size}x${file.size}px</h3>
+                <canvas id="canvas${file.size}" width="${file.size}" height="${file.size}"></canvas>
+                <br>
+                <button onclick="downloadPng(${file.size}, '${file.output}')">⬇️ Pobierz ${file.output}</button>
+            `;
+            preview.appendChild(box);
+
+            // Pobierz i konwertuj SVG
+            const response = await fetch(file.svg);
+            const svgText = await response.text();
+            
+            const img = new Image();
+            const svgBlob = new Blob([svgText], { type: 'image/svg+xml' });
+            const url = URL.createObjectURL(svgBlob);
+            
+            img.onload = function() {
+                const canvas = document.getElementById('canvas' + file.size);
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, file.size, file.size);
+                URL.revokeObjectURL(url);
+            };
+            
+            img.src = url;
+        }
+
+        function downloadPng(size, filename) {
+            const canvas = document.getElementById('canvas' + size);
+            
+            canvas.toBlob(function(blob) {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            });
+        }
+    </script>
+</body>
+</html>
