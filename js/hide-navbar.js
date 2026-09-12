@@ -1,4 +1,4 @@
-// STANDALONE MODE FIX - MUSI BYĆ ZAŁADOWANY JAKO PIERWSZY!
+// STANDALONE MODE FIX - NADPISANIE window.location
 (function() {
     'use strict';
     
@@ -6,55 +6,66 @@
     var isStandalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
     
     if (isStandalone) {
-        console.log("🟢 STANDALONE MODE DETECTED - Intercepting ALL navigation");
+        console.log("🟢 STANDALONE MODE - Przechwytywanie nawigacji");
         
-        // KLUCZOWE: Przechwytuj kliknięcia PRZED wszystkimi innymi handlerami
+        // NADPISZ window.location.href setter
+        var originalLocation = window.location;
+        var originalHref = originalLocation.href;
+        
+        Object.defineProperty(window, 'location', {
+            get: function() {
+                return originalLocation;
+            },
+            set: function(url) {
+                console.log("🔴 BLOCKED window.location =", url);
+                originalLocation.href = url;
+            }
+        });
+        
+        // PRZECHWYTUJ onclick PRZED wykonaniem
         document.addEventListener('click', function(e) {
             var target = e.target;
             var depth = 0;
             
-            // Idź w górę drzewa DOM szukając elementu z onclick
+            // Szukaj elementu z onclick
             while (target && depth < 10) {
                 var onclick = target.getAttribute('onclick');
                 
-                if (onclick) {
-                    // Sprawdź czy onclick zawiera window.location
-                    if (onclick.indexOf('window.location') !== -1 || onclick.indexOf('.href') !== -1) {
-                        // Wyciągnij URL
-                        var urlMatch = onclick.match(/['"]([^'"]+\.html[^'"]*)['"]/);
+                if (onclick && (onclick.indexOf('window.location') !== -1 || onclick.indexOf('.href') !== -1)) {
+                    // Wyciągnij URL
+                    var urlMatch = onclick.match(/['"]([^'"]+\.html[^'"]*)['"]/);
+                    
+                    if (urlMatch && urlMatch[1]) {
+                        var url = urlMatch[1];
                         
-                        if (urlMatch && urlMatch[1]) {
-                            var url = urlMatch[1];
-                            
-                            console.log("🔴 BLOCKED onclick - redirecting to:", url);
-                            
-                            // ZATRZYMAJ wszystkie eventy
-                            e.preventDefault();
-                            e.stopPropagation();
-                            e.stopImmediatePropagation();
-                            
-                            // Nawiguj przez window.location (działa w standalone)
-                            setTimeout(function() {
-                                window.location.href = url;
-                            }, 10);
-                            
-                            return false;
-                        }
+                        console.log("🔴 INTERCEPTED onclick:", url);
+                        
+                        // ZATRZYMAJ event
+                        e.preventDefault();
+                        e.stopPropagation();
+                        e.stopImmediatePropagation();
+                        
+                        // Nawiguj ASYNCHRONICZNIE
+                        setTimeout(function() {
+                            window.location.href = url;
+                        }, 50);
+                        
+                        return false;
                     }
                 }
                 
-                // Sprawdź czy to link <a>
+                // Sprawdź <a> tag
                 if (target.tagName === 'A') {
                     var href = target.getAttribute('href');
                     if (href && href.indexOf('.html') !== -1) {
                         e.preventDefault();
                         e.stopPropagation();
                         
-                        console.log("🔵 Link clicked:", href);
+                        console.log("🔵 Link:", href);
                         
                         setTimeout(function() {
                             window.location.href = href;
-                        }, 10);
+                        }, 50);
                         
                         return false;
                     }
@@ -63,7 +74,7 @@
                 target = target.parentElement;
                 depth++;
             }
-        }, true); // useCapture = TRUE (najważniejsze!)
+        }, true); // useCapture = TRUE!
     }
     
     // Ukryj pasek scrollując
